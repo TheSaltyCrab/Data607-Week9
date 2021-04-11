@@ -1,0 +1,43 @@
+---
+title: "DATA607week9"
+author: "Daniel Sullivan"
+date: "4/11/2021"
+output:
+  html_document:
+    df_print: paged
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load libraries and data, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(openintro)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(knitr)
+```
+```{r}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+for this We used the NYTimes top stories API to pull the top buissness stories from their API put them into a data frame and format and trim the data to a nicer looking data frame.
+```{r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+
+# api key gPjRBHYd0x0m7o7C5CZO9dAYGpgeYZNS
+
+
+r <- fromJSON("https://api.nytimes.com/svc/topstories/v2/business.json?api-key=gPjRBHYd0x0m7o7C5CZO9dAYGpgeYZNS")
+
+df<-r$results
+slim_df<-data.frame("title" = df$title, 
+                    "author"= df$byline%>%
+                      str_remove_all("By ")%>%
+                      str_replace_all(" and ", ", "),
+                    "published_date"= df$published_date%>%
+                      str_extract("^....-..-.."),
+                    "URL" = df$short_url, "abstract"=df$abstract
+                    )
+```
+
